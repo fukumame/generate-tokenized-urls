@@ -2,9 +2,10 @@
 console.log("Running Conversion");
 
 const AWS = require("aws-sdk");
+require('dotenv').config();
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
-const s3 = new AWS.S3();
+const s3 = new AWS.S3({region: process.env.AWS_REGION});
 const args = require("yargs")
   .option("bucket", {
     alias: "b",
