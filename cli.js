@@ -23,6 +23,11 @@ const args = require("yargs")
     alias: "o",
     describe: "Filepath to output result"
   })
+  .option("prefix", {
+    alias: "p",
+    describe: "Limits the response to keys that begin with the specified prefix.",
+    default: ""
+  })
   .demandOption(["bucket", "host", "secret", "output"])
   .help().argv;
 
@@ -34,9 +39,10 @@ const mapToUrl = ({ key, bucket, externalId }) => {
   return { externalId, imageUrl: `${args.host}?token=${encoded}` };
 };
 
-const generateKeyBucketPairs = async bucket => {
+const generateKeyBucketPairs = async (bucket, prefix) => {
   const params = {
-    Bucket: bucket
+    Bucket: bucket,
+    Prefix: prefix
   };
   let content = [];
   const gatherUrlsFromBucket = new Promise((resolve, reject) => {
@@ -66,7 +72,7 @@ const generateKeyBucketPairs = async bucket => {
 };
 
 const writeToOutput = async () => {
-  const json = await generateKeyBucketPairs(args.bucket);
+  const json = await generateKeyBucketPairs(args.bucket, args.prefix);
 
   fs.writeFile(args.output, JSON.stringify(json), err => {
     if (err) {
