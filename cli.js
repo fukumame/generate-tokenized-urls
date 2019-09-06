@@ -75,13 +75,29 @@ const generateKeyBucketPairs = async (bucket, prefix) => {
 const writeToOutput = async () => {
   const json = await generateKeyBucketPairs(args.bucket, args.prefix);
 
-  fs.writeFile(args.output, JSON.stringify(json), err => {
-    if (err) {
-      throw err;
+  const splitSize = 5000;
+  let startIndex = 0;
+
+  const baseFileName = args.output.split(".")[0];
+
+  while(true){
+    const splitJson = json.slice(startIndex, startIndex + splitSize);
+
+    if (splitJson.length === 0){
+      break
     }
 
-    console.log("The data has been saved");
-  });
+    const fileName = `${baseFileName}_${startIndex}.json`;
+    fs.writeFile(fileName, JSON.stringify(splitJson), err => {
+      if (err) {
+        throw err;
+      }
+      console.log(`${fileName} has been saved`);
+    });
+    startIndex += splitSize;
+
+  }
+
 };
 
 writeToOutput();
