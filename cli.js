@@ -51,9 +51,10 @@ const generateKeyBucketPairs = async (bucket, prefix) => {
         reject(err);
       }
       if (data) {
+        dataContents = data.Contents.filter(({Key}) => Key.match(/(\.png|\.jpg|\.jpeg|\.tiff|\.gif)/));
         content = [
           ...content,
-          ...data.Contents.map(({ Key }) => ({
+          ...dataContents.map(({ Key }) => ({
             key: Key,
             bucket,
             externalId: Key
