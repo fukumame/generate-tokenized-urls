@@ -15,10 +15,6 @@ const args = require("yargs")
     alias: "h",
     describe: "URL hosting the flask proxy"
   })
-  .option("secret", {
-    alias: "s",
-    describe: "Secret used to generate JWT token"
-  })
   .option("output", {
     alias: "o",
     describe: "Filepath to output result"
@@ -28,11 +24,11 @@ const args = require("yargs")
     describe: "Limits the response to keys that begin with the specified prefix.",
     default: ""
   })
-  .demandOption(["bucket", "host", "secret", "output"])
+  .demandOption(["bucket", "host", "output"])
   .help().argv;
 
 const mapToUrl = ({ key, bucket, externalId }) => {
-  const encoded = jwt.sign({ key, bucket }, args["secret"], {
+  const encoded = jwt.sign({ key, bucket }, process.env.JWT_SECRET, {
     expiresIn: "100y"
   });
 
